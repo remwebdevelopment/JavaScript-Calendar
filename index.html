@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>Calendar Test</title>
+</head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/calendar.js"></script>
+<link type="text/css" rel="stylesheet" href="css/calendar.css" />
+<style type="text/css">
+
+body {font-family:Arial; }
+
+#divCalendar1{width: 600px; }
+	#divCalendar1 .calendar td {height:42px; line-height:42px; }
+#divCalendar2{width: 400px; }
+
+#notes{margin:10px; border:1px solid black; padding:15px; }
+</style>
+<body>
+<h3>Calendar 1</h3>
+<div id="divCalendar1"></div>
+<br><br>
+<h3>Calendar 2</h3>
+<div id="divCalendar2"></div>
+<br><br>
+<input type="button" id="btnTestSetMonth" value="Test calendar2.setMonth() when passing in highlighted dates" />
+<br><br>
+<h3>NOTES</h3>
+<div id="notes">
+	<p>
+		When calling <b>createCalendar()</b>, you pass in an object as the param. Here are the properties of the param object: 
+		<ul>
+			<li><b>target</b>: The HTML element that will contain the calendar</li>
+			<li><b>highlightedDates</b>: An object whose key is a date string (ex:"12/31/2012"). When the calendar redraws itself, it will check the highlightedDates, and if it finds a match for the month is its drawing, will apply the 'hightlighted' style to the cell.</li>
+			<li><b>prevButtonText</b>: You can pass in the text to be used for the buttons that scroll from month to month. Or you can pass in spaces, and use a background image to style the buttons.</li>
+			<li><b>nextButtonText</b></li>
+			<li><b>onDateSelected</b>: You can pass in a function that gets called when a date on the calendar is selected.</li>
+		</ul>
+	</p>
+	<p>
+		The calendar has only one public method, which is <b>setMonth()</b>. 
+		<br>You pass in an object as the param, here are the properties of the param object:
+		<ul>
+			<li><b>date</b>: A Date object whose month will be rendered in the calendar</li>
+			<li><b>highlightedDates</b>(optional): You add/replace the highlighted dates when calling setMonth()</li>
+		</ul>
+	</p>
+</div>
+
+</body>
+<script>
+(function($, dependencies){
+
+	//dependencies...
+	var createCalendar = dependencies.createCalendar;
+	
+	// we'll create 2 separate instances of the calendar
+	var calendar1;
+	var calendar2;
+
+	var calendar1HighlightedDates = {}; // holds dates that have events and need to be highlighted on calendar1
+	var calendar2HighlightedDates = {}; // holds dates that have events and need to be highlighted on calendar2
+	// NOTE: the key must be a date string ex: "12/31/2012" and the value can be anything you want
+	// ex: calendar1HighlightedDates['12/31/2012'] = "New Year's Eve";
+	// OR
+	// ex: calendar1HighlightedDates['12/31/2012'] = [someEventObj, someEventObj];
+	
+	$(document).ready(function(){
+				
+		// SET UP THE FIRST CALENDAR
+		var target1 = document.getElementById("divCalendar1"),
+			date = new Date();
+			
+		//create some selected dates to pass into the calendar
+		//these would normally get populated from a data store
+		var	dateStr = (date.getMonth()+1) + "/" + 7 + "/" + date.getFullYear(); // we'll use the 7th day of the current month as an example
+		var	dateStr2 = (date.getMonth()+1) + "/" + 11 + "/" + date.getFullYear();
+		calendar1HighlightedDates[dateStr] = "Some Important Date to Remember for calendar 1";
+		calendar1HighlightedDates[dateStr2] = "PAY DAY for calendar 1";
+		
+		//initialize the calendar (pass in the target div and the selected dates obj
+		calendar1 = createCalendar({
+			target:				target1,
+			highlightedDates:	calendar1HighlightedDates, 
+			onDateSelected:		dateSelected,
+			prevButtonText:		"&lt;&lt;&nbsp;",
+			nextButtonText:		"&nbsp;&gt;&gt;"
+		});
+		
+		//set the month to this month
+		calendar1.setMonth({date:date});
+		
+		// SET UP THE SECOND CALENDAR
+		var target2 = document.getElementById("divCalendar2");
+			
+		//create some selected dates to pass into the calendar
+		//these would normally get populated from a data store
+		dateStr = (date.getMonth()+1) + "/" + 10 + "/" + date.getFullYear();
+		dateStr2 = (date.getMonth()+1) + "/" + 20 + "/" + date.getFullYear();
+		calendar2HighlightedDates[dateStr] = "Some Important Date to Remember for calendar 2";
+		calendar2HighlightedDates[dateStr2] = "PAY DAY for calendar 2";
+		
+		//initialize the calendar (pass in the target div and the selected dates obj
+		calendar2 = createCalendar({
+			target:				target2,
+			highlightedDates:	calendar2HighlightedDates, 
+			onDateSelected:		dateSelected,
+			prevButtonText:		"&lt;&lt;&nbsp;",
+			nextButtonText:		"&nbsp;&gt;&gt;"
+		});
+		
+		//set the month to this month
+		calendar2.setMonth({date:date});
+		
+		// SET UP btnTestSetMonth handler
+		$("#btnTestSetMonth").click(testSetMonthWithHighlightedDates);
+		
+		
+	});//end doc.ready
+	
+	// this is the callback that we passed into the createCalendar() params
+	// gets called when a date is selected
+	function dateSelected(evt){
+		var dateString = evt.dateString;
+		alert(dateString);
+		
+		switch(evt.target.id){
+			case "divCalendar1":
+				//alert("you clicked a date on calendar 1");
+				if(calendar1HighlightedDates[dateString]){
+					alert(calendar1HighlightedDates[dateString]);
+				}
+			break;
+			case "divCalendar2":
+				//alert("you clicked a date on calendar 2");
+				if(calendar2HighlightedDates[dateString]){
+					alert(calendar2HighlightedDates[dateString]);
+				}
+			break;
+			default:
+		}
+	}
+	
+	function testSetMonthWithHighlightedDates($event){
+		//alert($event);
+		calendar2HighlightedDates = {};
+		calendar2HighlightedDates["12/31/2012"] = "NEW YEARS EVE!";
+		calendar2HighlightedDates["12/25/2012"] = "XMAS!";
+		
+		date = new Date("12/1/2012");
+		calendar2.setMonth({date:date, highlightedDates:calendar2HighlightedDates});
+		
+	}
+	
+})(jQuery,{createCalendar:REM.ui.calendars.createCalendar});
+</script>
+</html>

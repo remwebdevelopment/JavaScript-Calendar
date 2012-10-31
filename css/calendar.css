@@ -1,0 +1,11 @@
+.calendar { background-color:#fff; border:1px solid red;}
+.calendar tr.mainHeader {}
+	.calendar .gotoPrevMonth, .gotoNextMonth, td[date]{cursor:pointer; font-weight:bold; }
+	.calendar .mainHeaderText{font-size:110%; font-weight:bold; }
+.calendar tr.daysHeader {background-color:#ccc; color:red; }
+	.calendar tr.daysHeader th{height:24px; line-height:24px; }
+.calendar td.highlighted{background-color:#CCCCCC; }
+.calendar td{cursor:pointer; }
+.calendar td {height:22px; line-height:22px; }
+	.calendar td div {border-right:1px solid red; border-top:1px solid red; /*height:90%; background-color:green; margin:5%;*/ } 
+	.calendar td div.last {border-right:none; }
